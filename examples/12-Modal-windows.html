@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Modal windows</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>12) Modal windows</h4>
+
+<input type="button" @click="this.windowShow('Show modal window<br>This is an example')" value="Show simple"><br><br>
+<input type="button" onclick="june_pau.windowShow('Show modal window<br>This is an example', {okText: 'Ok'})" value="Show with Ok button"><br><br>
+<input type="button" onclick="june_pau.windowShow('Show modal window<br>This is an example', {okText: 'My Ok', okAction: () => june_pau.funcs.okAction()})" value="Show with action"><br><br>
+<input type="button" onclick="june_pau.windowShow('Show modal window<br>This is an example', {okText: 'Ok', okAction: () => june_pau.funcs.okAction(), cancelText: 'Cancel', cancelAction: () => june_pau.funcs.cancelAction()})" value="Show with actions"><br><br>
+<input type="button" onclick="june_pau.windowDel(() => alert('Delete function'), 'Optional text')" value="Show delete confirmation"><br><br>
+<input type="button" onclick="june_pau.windowShow('Type a value', {input: 'default value', okAction: v => alert('You enter: ' + v)})" value="Show input window"><br><br>
+<input type="button" onclick="june_pau.windowShow(june_pau.data.winTxt, june_pau.data.winOpts)" value="Show advanced window">
+
+<script>
+const info = {
+	data: {
+		winTxt: 'Check options<br><br><input id="chkwin1" type="checkbox"><label for="chkwin1">My option 1</label><input id="chkwin2" type="checkbox" checked><label for="chkwin2">My option 2</label>',
+		winOpts: {okAction: () => alert('Option 1: ' + june_pau.e('chkwin1').checked + ' - Option 2: ' + june_pau.e('chkwin2').checked), cancelAction: 0}
+	},
+	funcs: {
+		okAction: () => alert('You click Ok'),
+		cancelAction: () => alert('You click Cancel')
+	}
+}
+
+june_pau.main = -1;
+june_pau.importMod(info);
+</script>
+
+</body>
+</html>

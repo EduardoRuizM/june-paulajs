@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - If sample</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>5) If sample</h4>
+<small>(values for checked assigment with code directly)</small><br><br>
+
+<input id="chkif" type="checkbox" *checked="this.data.showInfo">
+<label for="chkif">Toggle show info</label>
+<b data-jpau-if="this.data.showInfo">SHOW THIS INFO</b>
+
+<script>
+const info = {
+	data: {
+		showInfo: true
+	}
+}
+
+june_pau.main = -1;
+window.addEventListener('load', () => june_pau.importMod(info));
+</script>
+
+</body>
+</html>

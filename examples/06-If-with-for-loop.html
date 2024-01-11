@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - If with for loop</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>6) If with for loop</h4>
+<small>(values for checked assigment with code directly)</small><br><br>
+
+<div data-jpau-for="for(let vari = 1; vari < 4; vari++)">
+  <input :id="chkif{{ vari }}" type="checkbox" checked @click="this.data.showInfos[{{ vari }}] = !this.data.showInfos[{{ vari }}]">
+  <label :for="chkif{{ vari }}">Toggle show info {{ vari }}</label>
+  <b :id="chkifb{{ varx }}" :data-jpau-if="this.data.showInfos[{{ vari }}]">SHOW THIS INFO {{ vari }}</b>
+</div>
+
+<script>
+const info = {
+	data: {
+		showInfos: {1: true, 2: true, 3: true}
+	}
+}
+
+june_pau.main = -1;
+window.addEventListener('load', () => june_pau.importMod(info));
+</script>
+
+</body>
+</html>

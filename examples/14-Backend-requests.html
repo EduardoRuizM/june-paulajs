@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Backend requests</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>14.1) Backend requests</h4>
+To test these examples on your local machine, run in dev folder 'node backend.js'
+using backend <a href="https://github.com/EduardoRuizM/june-xpress" target="_blank">JuNe Xpress</a> on localhost:8180<br><br><br>
+
+<form id="sample1" onsubmit="return june_pau.funcs.sample1()">
+  <input type="text" name="field10" value="My value">
+  <input type="checkbox" name="field11" value="1" checked>
+  <input type="submit" class="button">
+</form>
+
+<br><br>
+
+
+<h4>14.2) Backend request with (hidden) captcha</h4>
+
+<form id="sample2" onsubmit="june_pau.funcs.sample2(); return false">
+  <input type="text" name="field20" value="My value with captcha">
+  <input type="submit" class="button">
+</form>
+
+<script>
+const info = {
+	funcs: {
+		sample1: function() {
+		let fd = june_pau.fdata('sample1');
+			if(fd !== false) june_pau.sendRequest('http://localhost:8180/sample1', 'POST', fd).then(function(r) { alert(JSON.stringify(r.response)); });
+			return false;
+		},
+		sample2: async function() {
+			let fd = june_pau.fdata('sample2');
+			fd = await june_pau.captcha(fd, 'http://localhost:8180/captcha'); // Comment this line to test without captcha
+			if(fd !== false) june_pau.sendRequest('http://localhost:8180/sample2', 'POST', fd).then(function(r) { alert(JSON.stringify(r.response)); });
+		}
+	}
+}
+
+june_pau.main = -1;
+june_pau.importMod(info);
+</script>
+
+</body>
+</html>

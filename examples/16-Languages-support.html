@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Languages support</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>16) Languages support</h4>
+
+<span data-jpau-for="for(let language of this.main.langs)">
+  <div style="cursor: pointer; padding: 0 8px" @click="this.setLang(language.code)" *title="language.name">{{ language.icon }}</div>
+</span>
+<fieldset>
+  <legend>Content according to language</legend>
+  <p><span>{{ this.text('menuFile') }}</span></p>
+  <p><span>{{ this.text('menuEdit') }}</span></p>
+  <p><span>{{ this.text('menuFormat') }}</span></p>
+  <p><span>{{ this.text('menuWindow') }}</span></p>
+  <p>{{ this.text('textSample') }}</p>
+</fieldset>
+
+<script>
+const main = {
+	langs: [
+		{code: 'en-US', name: 'English', icon: '🇬🇧', default: 'en'},
+		{code: 'es-ES', name: 'Español', icon: '🇪🇸', default: 'es'},
+		{code: 'it-IT', name: 'Italiano', icon: '🇮🇹', default: 'it'}
+	],
+	texts: {
+		'en-US': {	ok: 'Ok',
+				cancel: 'Cancel',
+				deleteAsk: 'Delete?',
+				uploadSmallMsg: '⛔ Maximum file size is 12 Kb',
+				uploadLargeMsg: '⛔ Maximum file size is 50 Mb',
+				menuFile: 'File',
+				menuEdit: 'Edit',
+				menuFormat: 'Format',
+				menuWindow: 'Window',
+				textSample: 'Test text in English'
+		},
+		'es-ES': {	ok: 'Aceptar',
+				cancel: 'Cancelar',
+				deleteAsk: '¿Eliminar?',
+				uploadSmallMsg: '⛔ El tamaño máximo es 12 Kb',
+				uploadLargeMsg: '⛔ El tamaño máximo es 50 Mb',
+				menuFile: 'Archivo',
+				menuEdit: 'Edición',
+				menuFormat: 'Formato',
+				menuWindow: 'Ventana',
+				textSample: 'Texto de prueba en Español'
+		},
+		'it-IT': {	ok: 'Ok',
+				cancel: 'Annullare',
+				deleteAsk: '¿Cancellare?',
+				uploadSmallMsg: '⛔ La dimensione massima del file è 12 Kb',
+				uploadLargeMsg: '⛔ La dimensione massima del file è 50 Mb',
+				menuFile: 'Archivio',
+				menuEdit: 'Modifica',
+				menuFormat: 'Formato',
+				menuWindow: 'Finestra',
+				textSample: 'Testo di prova in Italiano'
+		}
+	}
+}
+
+june_pau.load(main);
+june_pau.importMod();
+</script>
+
+</body>
+</html>

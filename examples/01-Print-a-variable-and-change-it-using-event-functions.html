@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Print a variable and change using events</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>1) How to print a variable 'myvar' on the screen and change its value using event functions</h4>
+
+Change the value of this variable:
+
+<input type="button" value="-" @click="this.funcs.changeVar(-1)">
+<div style="width: 50px; color: blue; display: inline-block">
+  {{ myvar }}
+</div>
+<input type="button" value="+" @click="this.funcs.changeVar(1)">
+<br>Value * 3 = <span style="color: blue">{{ myvar * 3 }}</span>
+
+<script>
+const info = {
+	data: {
+		myvar: 0
+	},
+	funcs: {
+		onLoad: () => info.data.myvar = 1,
+		changeVar: function(i) {this.data.myvar+= i}
+	}
+}
+
+june_pau.main = -1;
+window.addEventListener('load', () => june_pau.importMod(info));
+</script>
+
+</body>
+</html>

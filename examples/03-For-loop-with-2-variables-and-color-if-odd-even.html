@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - For loop with 2 variables and color</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>3) For loop with 2 variables and color if odd/even</h4>
+
+<div>
+  <div data-jpau-for="for(let vari = 0, varj = 100; vari < 10; vari++, varj++)">
+    <span *style="this.funcs.oddColor(vari)">{{ vari }} and {{ varj }}</span>
+  </div>
+</div>
+
+<script>
+const info = {
+	funcs: {
+		oddColor: i => 'color: ' + ((i % 2) ? 'red' : 'blue')
+	}
+}
+
+june_pau.main = -1;
+window.addEventListener('load', () => june_pau.importMod(info));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Toast notifications</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>13) Toast notifications</h4>
+
+<input type="button" onclick="june_pau.toastShow('I am a toast notification')" value="Show toast"><br><br>
+<input type="button" @click="this.toastShow('I am a bottom toast notification', {toastPos: 'bottom'})" value="Show bottom toast"><br><br>
+<input type="button" @click="this.toastShow('I am a toast middle notification', {toastTime: 45000, toastPY: '50%'})" value="Show middle toast">
+
+<script>
+june_pau.main = -1;
+june_pau.importMod();
+</script>
+
+</body>
+</html>

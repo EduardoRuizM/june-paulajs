@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Routing system</title>
+</head>
+
+<body>
+
+Have a look at paulajs.com website source code for a live sample <a href="https://paulajs.com/routing">https://paulajs.com/routing</a>
+
+<h4>1) Define routes</h4>
+
+<blockquote style="background: #DEF">
+  &lt;jpau-content&gt;<br>
+  &nbsp; &lt;jpau-route path=&quot;/&quot; module=&quot;index&quot;&gt;&lt;/jpau-route&gt;<br>
+  &nbsp; &lt;jpau-route path=&quot;/mypage&quot; module=&quot;mypage&quot;&gt;&lt;/jpau-route&gt;<br> &nbsp;
+  &lt;jpau-route path=&quot;(default)&quot; module=&quot;404&quot;&gt;&lt;/jpau-route&gt;<br>
+  &lt;/jpau-content&gt;
+</blockquote>
+<div>
+  - In this example <b>/</b> for index module<br>
+  - mypage.js for an example<br>
+  - 404.js for <b>(default)</b> if location does not match any route
+</div>
+<br><br>
+
+<h4>2) Create links (with is=&quot;jpau-link&quot;)</h4>
+
+<blockquote style="background: #DEF" class="ov">
+  &lt;a href=&quot;/&quot; is=&quot;jpau-link&quot;&gt;Home&lt;/a&gt;<br>
+  &lt;a href=&quot;/mypage&quot; is=&quot;jpau-link&quot;&gt;My Page&lt;/a&gt;
+</blockquote>
+<br>
+
+<h4>3) Create (example) module mypage.js</h4>
+
+<pre>
+export const data = {
+	title: 'Page title',
+	myvar: 'My variable'
+};
+
+export const funcs = {
+	onLoad: () => data.myvar = 1,
+	onMount: function() {},
+	myFunction: function(i) {this.data.myvar = i}
+};
+
+export const html = \`
+&lt;h1&gt;Page content&lt;/h1&gt;
+\`;
+</pre>
+
+</body>
+</html>

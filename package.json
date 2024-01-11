@@ -1,0 +1,31 @@
+{
+  "name": "june-paulajs",
+  "version": "2.1.0",
+  "author": "Eduardo Ruiz <eruiz@dataclick.es> (https://www.dataclick.es)",
+  "description": "JuNe PaulaJS (Portable Adaptable Utility for Lightweight Applications) JavaScript framework to build frontend, user interfaces, Single-page application or Progressive Web App",
+  "keywords": [
+    "paulajs", "javascript", "framework", "frontend", "single page application", "spa", "progressive web app", "pwa", "sdk", "devkit"
+  ],
+  "license": "MIT",
+  "homepage": "https://paulajs.com",
+  "bugs": {
+    "url": "https://github.com/EduardoRuizM/june-paulajs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EduardoRuizM/june-paulajs.git"
+  },
+  "bin": {
+    "paulajs": "dev/paulajs.js",
+    "backserver": "dev/backserver.js",
+    "webserver": "dev/webserver.js"
+  },
+  "scripts": {
+    "start": "node dev/webserver.js -dev 1 -index",
+    "example": "node dev/webserver.js -dev 1 -folder examples -index",
+    "backend": "node dev/backend.js",
+    "create": "node dev/paulajs.js create",
+    "build": "node dev/paulajs.js build",
+    "test": "echo \"Create a PaulaJS project\" && exit 1"
+  }
+}

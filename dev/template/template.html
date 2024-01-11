@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+<title data-jpauattr="1" data-jpauihtml="{{ title }}">%%title%%</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#FEA700">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="stylesheet" href="/june-cssfa.min.css">
+<script src="/june-paula.min.js"></script>
+</head>
+
+<body>
+
+<div class="main">
+
+  <header style="z-index: 2; height: 64px; background: #C80" class="tc">
+
+    <div style="float: left; padding-top: 20px" class="moby">
+      <nav role="navigation">
+	<div id="menuToggle">
+	  <input type="checkbox"><span></span><span></span><span></span>
+	  <ul id="menu">
+	    <a href="#"><li>Menu 1</li></a>
+	    <a href="#"><li>Menu 2</li></a>
+	  </ul>
+	</div>
+      </nav>
+    </div>
+
+    <div style="height: 60px; font-size: 2em; color: #FFF" class="ib">%%title%%</div>
+
+    <div style="float: right"><input id="colorScheme" type="checkbox" class="switch" onclick="colorScheme()" style="--checked: '\1F311'; --unchecked: '\2600\FE0F'"></div>
+
+    <div style="height: 22px" class="theme">
+
+      <nav class="mobn menu">
+	<ul>
+	  <li><a href="#">Menu 1</a></li>
+	  <li><a href="#">Menu 2</a></li>
+	  <li class="dropdown">
+	    <a href="#" class="dropbtn">Dropdown</a>
+	    <div class="dropcnt">
+	      <a href="#">Link 1</a>
+	      <a href="#">Link 2</a>
+	    </div>
+	  </li>
+	</ul>
+      </nav>
+
+    </div>
+  </header>
+
+  <div style="height: 86px">&nbsp;</div><!-- Same height as header to avoid up hidden content text -->
+
+  <section class="cards lh">
+    <h1>Welcome to %%title%%</h1>
+  </section>
+
+  <div style="height: 110px"></div><!-- Same height as footer to avoid bottom hidden content text -->
+
+  <footer style="position: absolute; bottom: 0; width: 100%">
+    <div style="height: 40px; padding-top: 14px" class="bgd tc">This is a PaulaJS project</div>
+    <div style="height: 18px; color: #FFF; background: #171717" class="bgd sm tc">Powered with <a href="https://paulajs.com" target="_blank">PaulaJS</a></div>
+  </footer>
+
+</div>
+
+</body>
+</html>
