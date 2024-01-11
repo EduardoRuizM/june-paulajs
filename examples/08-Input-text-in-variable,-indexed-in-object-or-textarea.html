@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Input text in a normal variable</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>8) Input text in a normal variable, indexed in an object or textarea</h4>
+
+<div data-jpau-for="for(let varn = 1; varn < 4; varn++)">
+  With object <b>{{ varn }}</b> <input :id="txtt{{ varn }}" type="text" *value="this.data.txvals"> The value is <b>{{ this.data.txvals['txtt' + varn] }}</b>
+</div>
+
+<script>
+const info = {
+	data: {
+		txtval: 'hello',
+		txvals: {'txtt1': 'My text 1', 'txtt2': 'My alternative', 'txtt3': 'My address'},
+		txtaval: 'bye'
+	}
+}
+
+june_pau.main = -1;
+window.addEventListener('load', () => june_pau.importMod(info));
+</script>
+
+</body>
+</html>

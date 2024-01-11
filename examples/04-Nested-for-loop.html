@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Nested for loop</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>4) Nested for loop</h4>
+
+<div data-jpau-for="for(let varx = 1; varx < 3; varx++)">
+  <span>x: {{ varx }}</span>
+  <span data-jpau-for="for(let vary = 3; vary < 6; vary++)"><span>{{ varx }}</span>x<span>{{ vary }}</span> </span>
+</div>
+
+<script>
+june_pau.main = -1;
+window.addEventListener('load', () => june_pau.importMod());
+</script>
+
+</body>
+</html>

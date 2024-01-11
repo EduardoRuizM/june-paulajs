@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Social share & File icons</title>
+<link rel="stylesheet" href="../dev/template/june-cssfa.min.css" />
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body class="lh">
+
+<h4>17.1) Social share</h4>
+Be sure to load june-cssfa.min.css and FontAwesome fonts folder (default /fonts)<br><br><br>
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-around; text-align: center; font-size: 2em">
+  <a *href="this.socialShare().facebook.link" target="_blank" title="Share with Facebook"><i *class="this.socialShare().facebook.icon"></i> Facebook</a>
+  <a *href="this.socialShare().whatsapp.link" target="_blank" title="Share with WhatsApp"><i *class="this.socialShare().whatsapp.icon"></i> WhatsApp</a>
+  <a *href="this.socialShare('JuNe PaulaJS en X').twitter.link" target="_blank" title="Share with X"><i *class="this.socialShare().twitter.icon"></i> X</a>
+  <a *href="this.socialShare().telegram.link" target="_blank" title="Share with Telegram"><i *class="this.socialShare().telegram.icon"></i> Telegram</a>
+  <a *href="this.socialShare().linkedin.link" target="_blank" title="Share with LinkedIn"><i *class="this.socialShare().linkedin.icon"></i> LinkedIn</a>
+  <a *href="this.socialShare().pinterest.link" target="_blank" title="Share with Pinterest"><i *class="this.socialShare().pinterest.icon"></i> Pinterest</a>
+</div>
+
+<br><br>
+
+
+<h4>17.2) File icons and file size</h4>
+
+<i *class="this.fileIcon('myjpgfile.jpg')"></i> myjpgfile.jpg Size: <span>{{ this.sizeUnit(23456) }}</span><br>
+<i *class="this.fileIcon('mydocxfile.docx')"></i> mydocxfile.docx<br>
+<i *class="this.fileIcon('myxlsxfile.xlsx')"></i> myxlsxfile.xlsx<br>
+<i *class="this.fileIcon('mypdffile.pdf')"></i> mypdffile.pdf<br>
+<i *class="this.fileIcon('mytextfile.txt')"></i> mytextfile.txt<br>
+<i *class="this.fileIcon('mymp3file.mp3')"></i> mymp3file.mp3<br>
+<i *class="this.fileIcon('mymp4file.mp4')"></i> mymp4file.mp4<br>
+<i *class="this.fileIcon('myzipfile.zip')"></i> myzipfile.zip<br>
+
+<script>
+june_pau.main = -1;
+june_pau.importMod();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Voice and Speak</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>18) Voice and Speak</h4>
+
+<h4>18.1) Voice speech recognition</h4>
+
+Button disabled if your browser does not support speech recognition<br><br>
+<button *disabled="!this.voiceOpts().speech" @click="this.funcs.speechRecog()">🎤 Speak here</button><br><br>
+Simulated click if you say:
+<input type="button" value="Hello" data-jpau-speech="Hello" onclick="alert('You said Hello')">
+<input type="button" value="Bye" data-jpau-speech="Bye" onclick="alert('You said Bye')"><br><br>
+Else printed here:<br>
+<textarea id="txtSpeech" cols="40" rows="3"></textarea><br><br>
+Language forced to english in this example (remove parameter and leave empty in speechRecog-&gt;this.voiceLang() for autodetect)<br>
+
+
+<h4>18.2) Speak (synthesis of human speech)</h4>
+<textarea id="txtSpeak1" cols="40" rows="3">This is a sample text</textarea><br>
+<button id="bttSpeak1" @click="this.funcs.speakText('bttSpeak1', 'txtSpeak1')">🔊</button><br><br>
+<textarea id="txtSpeak2" cols="40" rows="3">Another long message, so you can try to play and pause</textarea><br>
+<button id="bttSpeak2" @click="this.funcs.speakText('bttSpeak2', 'txtSpeak2')">🔊</button><br><br>
+Language forced to english in this example (remove parameter and leave empty in speakText-&gt;this.voiceLang() for autodetect)
+
+<script>
+const info = {
+	funcs: {
+		speechRecog: function() {
+		  this.voiceLang('en-US');
+		  this.speech(false, this.funcs.toText);
+		},
+		toText: function(v) {
+		  this.e('txtSpeech').value = v;
+		},
+		speakText: function(obj, txt) {
+		  this.voiceLang('en-US');
+		  this.speak(this.e(obj), this.e(txt).value, '🔊', '▶️', '⏸️');
+		}
+	}
+}
+
+june_pau.main = -1;
+june_pau.importMod(info);
+</script>
+
+</body>
+</html>

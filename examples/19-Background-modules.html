@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Background modules</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>19) Background modules</h4>
+
+<jpau-content></jpau-content>
+
+<script>
+const page1 = {
+	data: {
+		bgmcounter: 10
+	},
+	funcs: {
+		onLoad: function() {setInterval(function() {this.bgmod['background'].data.bgmcounter+= 1}.bind(this), 1000)},
+		onVisible: s => console.log('Visible page1: ' + s)
+	},
+	html: `
+		Counter always running for background: <b>{{ this.bgmod['background'].data.bgmcounter }}</b><br>
+		<textarea class="txt" style="width: 50%">Write text here for Background</textarea><br>
+		<input type="button" @click="this.importMod(page2, 'background2')" value="Go to Background2">
+`
+}
+
+const page2 = {
+	data: {
+		bgm2counter: 1000
+	},
+	funcs: {
+		onLoad: function() {setInterval(function() {this.bgmod['background2'].data.bgm2counter+= 1}.bind(this), 1000)},
+		onVisible: s => console.log('Visible page2: ' + s)
+	},
+	html: `
+		Counter2 always running for background: <b>{{ this.bgmod['background2'].data.bgm2counter }}</b><br>
+		<textarea class="txt" style="width: 50%">Write here for Background2</textarea><br>
+		<input type="button" @click="this.importMod(page1, 'background')" value="Go to Background" class="button">
+`
+}
+
+june_pau.main = -1;
+june_pau.importMod(page1, 'background');
+</script>
+
+</body>
+</html>

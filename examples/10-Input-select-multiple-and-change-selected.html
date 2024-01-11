@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Input select multiple and change selected</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>10) Input select multiple and change selected</h4>
+
+<select multiple size="4">
+  <option data-jpau-for="for(let varos in this.data.seloptions)" :value="{{ varos }}" *selected="this.data.seloptions">{{ seloptionstxt[varos] }}</option>
+</select>
+<br><br>Selected <b>{{ JSON.stringify(seloptions) }}</b>
+
+<script>
+const info = {
+	data: {
+		seloptionstxt: {'o1': 'My option 1', 'o2': 'My option 2', 'o3': 'My option 3', 'o4': 'My option 4'},
+		seloptions: {'o1': true, 'o2': false, 'o3': true, 'o4': false}
+	}
+}
+
+june_pau.main = -1;
+window.addEventListener('load', () => june_pau.importMod(info));
+</script>
+
+</body>
+</html>

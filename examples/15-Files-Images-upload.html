@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - Files / Images upload</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>15) Files / Images upload</h4>
+To test these examples on your local machine, run in dev folder 'node backend.js'
+using backend <a href="https://github.com/EduardoRuizM/june-xpress" target="_blank">JuNe Xpress</a> on localhost:8180<br><br>
+
+
+<h4>15.1) Send small file</h4>
+
+<form id="sample1" @submit="this.funcs.files('sample1')" enctype="multipart/form-data">
+  <input type="text" name="field10" value="My value sample1"><br>
+  <input type="file" id="myfile10" name="myfile" data-jpau-upload="small" data-jpau-action="http://localhost:8180/files">
+  <input type="submit" class="button">
+</form>
+
+<br><br>
+
+
+<h4>15.2) Send multiple small files</h4>
+
+<form id="sample2" @submit="this.funcs.files('sample2')" enctype="multipart/form-data">
+  <input type="file" id="myfile20" name="myfile" data-jpau-upload="small" data-jpau-action="http://localhost:8180/files" multiple>
+  <input type="submit" class="button">
+</form>
+
+<br><br>
+
+
+<h4>15.3) Send multiple large files with drop/paste zone</h4>
+
+<input type="file" id="myfile30" name="myfile" data-jpau-upload="large" data-jpau-action="http://localhost:8180/files" multiple><br>
+<input type="text" value="Here you can drop or paste files, or paste image from clipboard" size="60" data-jpau-upload-target="myfile30" readonly>
+
+<br><br>
+
+
+<h4>15.4) Send multiple images (large) with preview and resize to max 500x500</h4>
+
+<input type="file" id="myfile40" name="myfile" data-jpau-resize="500x500" data-jpau-upload="large" data-jpau-action="http://localhost:8180/files" data-jpau-preview="preview_myfile" multiple style="display: none">
+<div @click="this.e('myfile40').click()" data-jpau-upload-target="myfile40" class="ov tc cp" style="border: 2px dashed #000">Drop Here or Click to load</div>
+<div id="preview_myfile" data-jpau-template="mytemplate"></div>
+
+<template id="mytemplate">
+  <div class="ib vt" style="width: 400px">
+    <img data-jpau-element="img" style="max-width: 300px; border-radius: 4px"><br>
+    <i data-jpau-element="icon"></i>
+    Name: <span data-jpau-element="name" class="sm"></span><br>
+    Size: <span data-jpau-element="size" class="sm"></span><br>
+    <div data-jpau-element-show="loading" class="sm">
+      <progress data-jpau-element="progress" value="0" max="100"></progress>
+      <span data-jpau-element="abort" class="cp">&#9587;</span><br>
+      <span data-jpau-element="timeElapsed"></span> / <span data-jpau-element="timeEstimated"></span>
+    </div>
+    <div data-jpau-element-show="finish">&#9989;</div>
+    <div data-jpau-element-show="error" style="color: red">ERR</div>
+  </div>
+</template>
+
+<br><br>
+
+
+<h4>15.5) Capture image, audio, or video from the device camera/microphone if available</h4>
+
+<input type="file" id="myfile50" name="myfile" capture="user" accept="image/*" data-jpau-resize="500x500" data-jpau-upload="large" data-jpau-action="http://localhost:8180/files" multiple style="display: none">
+<input type="file" id="myfile51" name="myfile" capture="user" accept="audio/*" data-jpau-upload="large" data-jpau-action="http://localhost:8180/files" multiple style="display: none">
+<input type="file" id="myfile52" name="myfile" capture="environment" accept="video/*" data-jpau-upload="large" data-jpau-action="http://localhost:8180/files" multiple style="display: none">
+
+<button *disabled="!this.e('myfile50').capture" @click="this.e('myfile50').click()">&#128247;</button>
+<button *disabled="!this.e('myfile51').capture" @click="this.e('myfile51').click()">&#127908;</button>
+<button *disabled="!this.e('myfile52').capture" @click="this.e('myfile52').click()">&#128249;</button>
+
+<script>
+const info = {
+	funcs: {
+		files: function(frm) {
+			let fd = june_pau.fdata(frm);
+			if(fd !== false) june_pau.sendRequest('http://localhost:8180/files', 'POST', fd).then(function(r) { alert(JSON.stringify(r.response)); });
+		}
+	}
+}
+
+june_pau.main = -1;
+june_pau.importMod(info);
+</script>
+
+</body>
+</html>

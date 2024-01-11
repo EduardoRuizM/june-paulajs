@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PaulaJS - For loop to show a list using an array</title>
+<script src="../june-paula.min.js"></script>
+</head>
+
+<body>
+
+<h4>2) For loop to show a list using an array</h4>
+
+<table border="1">
+  <tr>
+    <th>Name</th><th>Surname</th><th>Num</th><th>Num * myvar</th>
+  </tr>
+  <tbody>
+  <tr data-jpau-for="for(let user of this.data.users)">
+    <td>{{ user.name }}</td><td>{{ user.sname }}</td><td>{{ user.num }}</td><td>{{ user.num * myvar }}</td>
+  </tr>
+  </tbody>
+</table>
+<br>
+<input type="button" value="Add Edward" @click="this.data.users.push({name: 'Edward', sname: 'Brown', num: 5})">
+<input type="button" value="Change Peter to Samuel" @click="this.data.users[1].name='Samuel'">
+
+<script>
+const info = {
+	data: {
+		myvar: 2,
+		users: [
+			{name: 'John', sname: 'Smith', num: 3},
+			{name: 'Peter', sname: 'Jones', num: 4}
+		]
+	}
+}
+
+june_pau.main = -1;
+window.addEventListener('load', () => june_pau.importMod(info));
+</script>
+
+</body>
+</html>

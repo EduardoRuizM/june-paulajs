@@ -1,0 +1,6 @@
+Try JuNeDNS Frontend, it contains everything you need to learn to master JuNe PaulaJS with JuNe BackServer:
+
+- Reactive variables, Routing system, Languages support, Modal windows, Toast notifications, Backend requests, Speech
+- User permissions, Modules, Sections, Session control JSON token, WebSockets, Automatic content update
+
+https://github.com/EduardoRuizM/junedns-frontend
