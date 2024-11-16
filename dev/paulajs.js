@@ -3,7 +3,7 @@
 //
 // ============= Utilities for JuNe PaulaJS =============
 // create template project  -  uglifyjs and build project
-//                 https://paulajs.com
+//      https://github.com/EduardoRuizM/june-paulajs
 //
 //  Copyright (c) 2024 Eduardo Ruiz <eruiz@dataclick.es>
 

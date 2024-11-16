@@ -1,26 +1,31 @@
 <p align="center">
-  <a href="https://paulajs.com"><img src="logo.png" title="JuNe PaulaJS" width="420" height="382" /></a>
+  <a href="https://github.com/EduardoRuizM/june-paulajs"><img src="logo.png" title="JuNe PaulaJS" width="420" height="382"></a>
 </p>
 <h1 align="center">
   Portable Adaptable Utility for Lightweight Applications
   <a href="https://github.com/EduardoRuizM/june-paulajs">EduardoRuizM/june-paulajs</a>
 </h1>
 <p align="center">
-  Dataclick <a href="https://paulajs.com">JuNe PaulaJS</a>
+  Dataclick <a href="https://github.com/EduardoRuizM/june-paulajs">JuNe PaulaJS</a>
   Free open-source JavaScript framework to build frontend, user interfaces and single-page applications
-  https://www.paulajs.com
 </p>
 
-# [JuNe PaulaJS](https://paulajs.com "JuNe PaulaJS") (only 1 file: 27 Kb) [GitHub](https://github.com/EduardoRuizM/june-paulajs "GitHub")
+# [JuNe PaulaJS](https://github.com/EduardoRuizM/june-paulajs "JuNe PaulaJS") (only 1 file: 27 Kb)
 ## JavaScript framework to build frontend or any type of web project
 
 ● JuNe PaulaJS (Portable Adaptable Utility for Lightweight Applications) is a JavaScript framework similar to React, Vue or Angular, but with more and needed features, without dependencies an optimized in 1 file.
+
 🏗 To build frontend, user interfaces, Single-page application (SPA) or Progressive Web App (PWA), also to create public pages with link compatibility for SEO. With a fully functionality and easy installation and use.
+
 ⌨ Developing without using any pseudo-language, just pure (Vanilla) JavaScript, without compiler/transpiler to edit your files directly (build optional for compact/uglify).
+
 📳 Run on all devices (desktop, mobile, tablet).
+
 🏎️ So, developments, deployments, executions and performance are faster.
+
 🍃 And a lower impact on the carbon footprint, both in the server and in the client browser, by using files of a few 27 Kb, which represents less transfer and less execution times, in a difference between 400-800 times compared to other frameworks.
-● Compatible and created with [ECMAScript 2023](https://ecma-international.org/publications-and-standards/standards/ecma-262/ "ECMAScript 2023") (ES14).
+
+● Compatible and created with [ECMAScript 2024](https://262.ecma-international.org/15.0/ "ECMAScript 2024") (ES15).
 
 # 🏅 10 in 1
 #### 1. Reactive variables
@@ -35,9 +40,13 @@
 #### 10. [JuNe CSS](https://github.com/EduardoRuizM/june-css "JuNe CSS") (responsive)
 
 ⏺ Includes the default features that any other framework has, such as reactive variables, for loops, or ifs.
+
 ⏺ But it also includes other features that in other frameworks you have to add a plugin, such as routing, language support, modal windows, toast notifications, captcha, or send requests to backend.
+
 ⏺ And also other important features such as a complete file upload system with custom preview, image rescaling, modules in background, automatic loader display, Open Graph, social share, or speech recognition/synthesis .
+
 ⏺ It includes everything you need to make your complete frontend, such as JuNe CSS, backend with JuNe BackServer, or a WebServer.
+
 ⏺ It´s easier and faster to directly develop, pure JavaScript, with no transpiler and including a single few Kbs file.
 
 ## 👉 Ideal to use with backend [JuNe BackServer](https://github.com/EduardoRuizM/june-backserver "JuNe BackServer")
@@ -49,29 +58,53 @@
 | Size | **27 Kb** | 7.8 Mb | 225 Mb | 14 Mb | 36.7 Mb | 156 Mb |
 
 ## All features you need
+
 ✔ Pure vanilla JavaScript without dependencies, with native Web Components.
+
 ✔ Reactive variables with automatic visual changes.
+
 ✔ If-conditions to show/hide, and for-loops to content repeat.
+
 ✔ Routing system integrated, *with window.history* and compatibility with open in new tab/window.
+
 ✔ SEO compatibility (for public projects).
+
 ✔ Support for languages.
+
 ✔ Support for modal windows.
+
 ✔ Support for toast notifications.
+
 ✔ Send requests to backend (GET, POST, PUT, PATCH, DELETE), recommended: [JuNe BackServer](https://github.com/EduardoRuizM/june-backserver "JuNe BackServer").
+
 ✔ Compatibility with JuNe BackServer Captcha.
+
 ✔ Upload multiple small or large files and entire folders with progress, from inputs, Drag & Drop or clipboard.
+
 ✔ Possibility of rescaling images for faster uploads and preview.
+
 ✔ Background modules and restore again to foreground with the same status.
+
 ✔ Meta tags or Open Graph protocol compatibility (for public projects).
+
 ✔ Social network share (for public projects).
+
 ✔ File type icons according file extension.
+
 ✔ Manage your frontend with your voice, transcribes from speech to text and human speech synthesis.
+
 ✔ Detect DOM new elements.
+
 ✔ Includes [JuNe CSS](https://github.com/EduardoRuizM/june-css "JuNe CSS") (responsive).
+
 ✔ Optional Node.js HTTP server for development with automatic update (HMR).
+
 ✔ Develop using only JavaScript without other pseudo-languages (like React syntax).
+
 ✔ Simple structure: data, functions and html, without complications (useEffect, useState...).
+
 ✔ No compilation/transpiler needed, neither Babel/Webpack/Snowpack.
+
 ✔ Ease installation, just include (minified) JuNe PaulaJS JavaScript file on your HTML.
 
 ![27 Kb](https://img.shields.io/github/size/EduardoRuizM/june-paulajs/june-paula.min.js) ![NPM Downloads](https://img.shields.io/npm/dt/june-paulajs)
@@ -79,7 +112,7 @@
 # Author
 [Eduardo Ruiz](https://github.com/EduardoRuizM) <<eruiz@dataclick.es>>
 
-# [JuNe](https://just-needed.com "JuNe") / JUst NEeded Philosophy
+# JuNe / JUst NEeded Philosophy
 1. **Source code using less code as possible**
   So you can understand code and find bugs easier.
 2. **Few and optimized lines is better**
@@ -294,8 +327,8 @@ Always use a previous parent container:
 | Tag | Definition | Sample |
 | :---: | --- | --- |
 | jpau-content | Block content and routes definition | `<jpau-content><jpau-route path="/" module="index"></jpau-route></jpau-content>` |
-| jpau-route | Route definition to load JS modules according path | `<jpau-route path="/" module="index"></jpau-route>`<br />`<jpau-route path="/users/:id" module="users"></jpau-route>`<br />`<jpau-route path="(default)" module="page404"></jpau-route>` |
-| jpau-link | Link to route using **is** with HTMLAnchorElement<br>Use it as a normal **a href** tag | `<a href="/" is="jpau-link">Home</a>`<br />`<a href="/users" is="jpau-link">Users</a>` |
+| jpau-route | Route definition to load JS modules according path | `<jpau-route path="/" module="index"></jpau-route>`<br>`<jpau-route path="/users/:id" module="users"></jpau-route>`<br>`<jpau-route path="(default)" module="page404"></jpau-route>` |
+| jpau-link | Link to route using **is** with HTMLAnchorElement<br>Use it as a normal **a href** tag | `<a href="/" is="jpau-link">Home</a>`<br>`<a href="/users" is="jpau-link">Users</a>` |
 
 - **jpau-route** attributes:
   **path**: URL route path with variables.
@@ -1087,12 +1120,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 | package.json | JuNe PaulaJS package.json |
 | README.md | Full and detailed JuNe PaulaJS documentation |
 
-# [JuNe](https://just-needed.com "JuNe") Development Ecosystem
+# JuNe Development Ecosystem
 Everything you need to develop your project:
 ### Backend
 - [JuNe BackServer](https://github.com/EduardoRuizM/june-backserver "JuNe BackServer") With request routing, tokens, file upload, send Emails, WebSockets, SSE and captcha.
 - [JuNe WebServer](https://github.com/EduardoRuizM/june-webserver "JuNe WebServer") Web server with HMR.
 
 ### Frontend
-- [JuNe PaulaJS](https://paulajs.com "JuNe PaulaJS") Powerful JavaScript framework - [GitHub](https://github.com/EduardoRuizM/june-paulajs "GitHub")
+- [JuNe PaulaJS](https://github.com/EduardoRuizM/june-paulajs "JuNe PaulaJS") Powerful JavaScript framework
 - [JuNe CSS](https://github.com/EduardoRuizM/june-css "JuNe CSS") Full responsive CSS library with icons.

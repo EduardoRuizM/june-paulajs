@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 //
-// =============== JuNe WebServer 2.1.0 ===============
+// =============== JuNe WebServer 2.1.1 ===============
 //
 // Copyright (c) 2024 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/june-webserver
