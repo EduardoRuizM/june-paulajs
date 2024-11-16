@@ -1,5 +1,5 @@
 // PaulaJS (Portable Adaptable Utility for Lightweight Applications)
-// https://paulajs.com (2.1.0) - Copyright (c) 2024 Eduardo Ruiz <eruiz@dataclick.es>
+// https://github.com/EduardoRuizM/june-paulajs (2.1.1) - Copyright (c) 2024 Eduardo Ruiz <eruiz@dataclick.es>
 
 'use strict';
 

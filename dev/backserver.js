@@ -1,5 +1,5 @@
 //
-// ============== JuNe BackServer 2.1.0 ==============-
+// ============== JuNe BackServer 2.1.1 ==============-
 //
 // Copyright (c) 2024 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/june-backserver
@@ -236,7 +236,7 @@ class BackServer extends EventEmitter {
 	req.body = {};
 	req.ip = req.socket.address().address;
 	if(/^post|put|patch$/.test(m))
-	  this.readBody(req, body.toString('latin1'), !headers['content-type'].startsWith('multipart/form-data'));
+	  this.readBody(req, body.toString('latin1'), !headers['content-type']?.startsWith('multipart/form-data'));
 
 	this.req = req;
 	this.session = {};
@@ -483,7 +483,7 @@ class BackServer extends EventEmitter {
     let hdr = 'From: ' + this.mailISOAddr(from_name, from_email) + `\nReturn-Path: ${from_email}\nTo: ` + this.mailISOAddr(to_name, to_email) + '\n';
     cc && (hdr+= `Cc: ${cc}\n`);
     bcc && (hdr+= `Bcc: ${bcc}\n`);
-    hdr+= 'Message-ID: <' + mailBoundary(false, 30).toLowerCase() + '@j_backserver>\nX-Mailer: JuNeBackServer\n';
+    hdr+= 'Message-ID: <' + this.mailBoundary(false, 30).toLowerCase() + '@j_backserver>\nX-Mailer: JuNeBackServer\n';
     ip && (hdr+= `X-SenderIP: ${ip}\n`);
     !text && html && (text = html.replace(/(<([^>]+)>)/g, ''))
     hdr+= `MIME-Version: 1.0\n`;
@@ -493,7 +493,7 @@ class BackServer extends EventEmitter {
     html = html.trim();
     if(html !== '' && (text !== '' || anyimg)) {
 
-      let bndalt = mailBoundary(), altnxt = mailBoundary();
+      let bndalt = this.mailBoundary(), altnxt = this.mailBoundary();
       if(text !== '')
 	msg+= `--${altnxt}\n` + ttype.replace('%', 'plain') + `\n${text}\n\n`;
 
@@ -501,7 +501,7 @@ class BackServer extends EventEmitter {
 
 	for(let i in attach.images) {
 
-	  bnd = attach.images[i].bnd = mailBoundary(false);
+	  bnd = attach.images[i].bnd = this.mailBoundary(false);
 	  html = html.replaceAll('cid:' + attach.images[i].code, `cid: ${bnd}`);
 	}
       }
@@ -518,7 +518,7 @@ class BackServer extends EventEmitter {
 
 	msg+= `--${bndalt}--\n`;
 	type = `Content-Type: multipart/related;\n\ttype="multipart/alternative";\n\tboundary="${bndalt}"\n`;
-	bnd = mailBoundary();
+	bnd = this.mailBoundary();
       }
     }
 
@@ -528,7 +528,7 @@ class BackServer extends EventEmitter {
 	msg = `--${bnd}\n${type}\n\n${msg}\n`;
       else {
 
-	bnd = mailBoundary();
+	bnd = this.mailBoundary();
 	if(text !== '')
 	  msg+= `--${bnd}\n` + ttype.replace('%', 'plain') + `\n${text}\n\n`;
 	if(html !== '')
