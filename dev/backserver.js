@@ -1,5 +1,5 @@
 //
-// ============== JuNe BackServer 2.1.1 ==============-
+// ============== JuNe BackServer 2.1.1 ===============
 //
 // Copyright (c) 2024 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/june-backserver
@@ -254,16 +254,18 @@ class BackServer extends EventEmitter {
 
 	    if((i = this.routes.get.findIndex(e => e.route === '(default)')) > -1)
 	      await this.routes.get[i].func(req, res);
+	    else
+	      req.status = 405;
 
-	    } else
-	      await this.routes[m][i.i].func(req, res);
+	  } else
+	    await this.routes[m][i.i].func(req, res);
 	}
 
 	if(headers.accept === 'text/event-stream') {
 
 	  res.writeHead(200, res.sendHeaders);
 	  setInterval(async () => {
-	    if(Object.keys(req.content).length) {
+	    if(req.content && Object.keys(req.content).length) {
 	      res.write(`data: ${JSON.stringify(req.content)}\n\n`);
 	      req.content = {};
 	    }
@@ -276,7 +278,7 @@ class BackServer extends EventEmitter {
 	    res.sendHeaders['X-Access-Token'] = this.setXaccess();
 
 	  res.writeHead(req.status, res.sendHeaders);
-	  res.write(JSON.stringify({status: req.status, ...req.content}) + '\n');
+	  res.write((req.raw) ? req.raw : JSON.stringify(req.content) + '\n');
 
 	  if(this.after)
 	    await this.after(req, res);
