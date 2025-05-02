@@ -18,8 +18,8 @@
     <div style="float: left; padding-top: 20px" class="moby">
       <nav role="navigation">
 	<div id="menuToggle">
-	  <input type="checkbox"><span></span><span></span><span></span>
-	  <ul id="menu">
+	  <input id="menuToggleChk" type="checkbox"><span></span><span></span><span></span>
+	  <ul id="menu" @click="this.e('menuToggleChk').checked=false">
 	    <a href="#"><li>Menu 1</li></a>
 	    <a href="#"><li>Menu 2</li></a>
 	  </ul>

@@ -1,5 +1,5 @@
 // PaulaJS (Portable Adaptable Utility for Lightweight Applications)
-// https://github.com/EduardoRuizM/june-paulajs (2.1.1) - Copyright (c) 2024 Eduardo Ruiz <eruiz@dataclick.es>
+// https://github.com/EduardoRuizM/june-paulajs (2.1.3) - Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 
 'use strict';
 
@@ -192,8 +192,12 @@ class JuNePAU {
 	  else {
 	    if(e.tagName === 'TEXTAREA' && t === 'value')
 	      e.innerText = r;
-	    else
-	      e.setAttribute(t, (c) ? '' : r);
+	    else {
+	      if(e.parentNode.tagName === 'SELECT' && !e.parentNode.multiple)
+		e.parentNode.value = e.value;
+	      else
+		e.setAttribute(t, (c) ? '' : r);
+	    }
 	  }
 	}
       }
@@ -400,8 +404,8 @@ class JuNePAU {
     if(this.funcs.onMount)
       this.funcs.onMount.bind(this)();
   }
-  link(p) {
-    p = new URL(p ?? '', window.location).pathname;
+  link(u) {
+    let p = new URL(u ?? '', window.location).pathname;
     this.params = {};
     this.getparams = new URLSearchParams(window.location.search);
     let g, i = this.routes.findIndex(e => {
@@ -412,7 +416,7 @@ class JuNePAU {
     if(i === -1 && (i = this.routes.findIndex(e => e.r === '(default)')) === -1)
       return;
 
-    history.pushState({url: p}, document.title, p);
+    history.pushState({url: u}, document.title, u);
     this.params = g?.groups || {};
     this.importMod(this.routes[i].m, this.routes[i].bg === 'true');
   }
@@ -579,7 +583,7 @@ class JuNePAU {
       return this.p.toasts.findIndex(t => t.id === this.id);
     }
     show() {
-      let s='<div id="JPT_' + this.id + '" style="z-index: ' + (50 + this.id) + '; position: fixed; ' + ((this.pos === 'bottom') ? 'bottom' : 'top') + ': -40px; opacity: 0' +
+      let s='<div id="JPT_' + this.id + '" role="alert" aria-live="polite" style="z-index: ' + (50 + this.id) + '; position: fixed; ' + ((this.pos === 'bottom') ? 'bottom' : 'top') + ': -40px; opacity: 0' +
 		((this.o.toastCSS) ? `" class="${this.o.toastCSS}` : '; width: 80%; left: 10%; right: 10%; padding: 7px 9px 20px; text-align: center; border-radius: 6px; box-shadow: 1px 1px 10px #CCC; color: #FFF; background: rgba(0,0,0,0.83); backdrop-filter: blur(2px); transition: .3s ease') + '">' +
 	'<span id="JPTX_' + this.id + '" style="cursor: pointer; display: block; text-align: right; font-size: 12px">&#9587;</span>' + this.t + '</div>';
 
@@ -615,7 +619,7 @@ class JuNePAU {
     }
   }
   sendReqIni(url, method, data, pget = {}) {
-    let u = new URL(url), d = (data && data instanceof FormData), o = {method: method ?? 'GET', headers: {'Content-Type': (d) ? 'multipart/form-data' : 'application/json'}};
+    let u = new URL(url), d = (data && data instanceof FormData), o = {method: method ?? 'GET', headers: (d) ? {} : {'Content-Type': 'application/json'}};
     if(this.main.data?._token)
       o.headers['x-access-token'] = this.main.data._token;
     if(this.main.data?._auth)
