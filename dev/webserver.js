@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 //
-// =============== JuNe WebServer 2.1.1 ===============
+// =============== JuNe WebServer 2.1.2 ===============
 //
 // Copyright (c) 2024 Eduardo Ruiz <eruiz@dataclick.es>
 // https://github.com/EduardoRuizM/june-webserver
@@ -40,7 +40,7 @@ class WebServer {
       options = {};
       for(let i = 0; i < process.argv.length - 1; i++) {
 
-	if(/^url|folder|cert|key|http2|index|if404|dev|hmr|script$/.test(process.argv[i].substring(1)) && process.argv[i + 1])
+	if(/^url|folder|cert|key|http2|index|if404|alias|dev|hmr|script$/.test(process.argv[i].substring(1)) && process.argv[i + 1])
 	  options[process.argv[i].substring(1)] = process.argv[i + 1];
       }
     }
@@ -53,6 +53,7 @@ class WebServer {
     this.mime = {};
     this.index = (options.index || 'index.html index.htm').split(' ');
     this.if404 = options.if404;
+    this.alias = options.alias?.split('|') || [];
     this.dev = !!options.dev;
     this.hmr = options.hmr || 30795;
     this.hmrsocket = 0;
@@ -132,6 +133,15 @@ class WebServer {
   async request(req, res) {
     const { method, url, headers } = req;
     let status = 404, str, f = this.folder + url, ext, fp;
+
+    if(this.alias) {
+
+      for(let i = 0; i < this.alias.length - 1; i+= 2) {
+
+	if(this.alias[i + 1] && url.startsWith(this.alias[i]))
+	  f = this.alias[i + 1] + url.slice(this.alias[i].length - 1);
+      }
+    }
 
     if(fs.existsSync(f)) {
 
