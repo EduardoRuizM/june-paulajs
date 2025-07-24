@@ -1,5 +1,5 @@
 // PaulaJS (Portable Adaptable Utility for Lightweight Applications)
-// https://github.com/EduardoRuizM/june-paulajs (2.1.3) - Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
+// https://github.com/EduardoRuizM/june-paulajs (2.1.4) - Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 
 'use strict';
 
@@ -20,7 +20,7 @@ class JuNePAU {
     this.lang = -1;
     this.bgmod = {};
     this._evnlst = {};
-    this._stopup = {s: 0, g: 0, o: new MutationObserver((mutationList, observer) => {for(const mutation of mutationList) {if(mutation.type === 'childList') this.prepHTML()}})};
+    this._stopup = {s: 0, g: 0, o: new MutationObserver((mutationList, observer) => {for(const mutation of mutationList) {if(mutation.type === 'childList' && [...mutation.addedNodes].some(n => n.nodeType === 1 && !n.closest('[data-jpau-ignore]'))) {this.prepHTML(); break;}}})};
     this.path = document.currentScript.getAttribute('path') || '/';
   }
   setProxy(d) {
@@ -62,7 +62,7 @@ class JuNePAU {
     return new Proxy(d || {}, {...mod_proxy});
   }
   prepEvn(e, p, d, t) {
-    if(!d && this.inFor(e, t))
+    if((!d && this.inFor(e, t)) || t?.dataset?.jpauIgnore)
       return;
 
     Array.prototype.slice.call(e.attributes || {}).forEach(function(i) {
@@ -112,10 +112,9 @@ class JuNePAU {
     }
   }
   prepHTML(m, p, d, t) {
-    const elms = (m ?? document).querySelectorAll('*');
+    const elms = (m ?? document).querySelectorAll('*:not([data-jpau-ignore])');
     for(let i of elms)
       this.prepElm(i, p, d, t);
-
     this.updHTML(m ?? document, p, d, t);
   }
   replHTML(v, d) {
@@ -127,7 +126,7 @@ class JuNePAU {
 	  t = this.replHTML(t, d);
       } else {
 	try {
-	  let r = eval(i[1].replaceAll(/([a-z]{1}[a-z0-9_\-\.]*)([\s\[\]\)]+|$)/gi, s => ((/^(this|june_pau|data)\./.test(s)) ? '' : 'p.') + s));
+	  let r = eval(i[1].replaceAll(/([a-z]{1}[a-z0-9_\-\.,]*)([\s\[\]\)]+|$)/gi, s => ((/^(this|june_pau|data)\./.test(s)) ? '' : 'p.') + s));
 	  if(r !== undefined)
 	    t = t.replace(i[0], r);
 
@@ -191,7 +190,7 @@ class JuNePAU {
 	    e.removeAttribute(t);
 	  else {
 	    if(e.tagName === 'TEXTAREA' && t === 'value')
-	      e.innerText = r;
+	      e.value = r;
 	    else {
 	      if(e.parentNode.tagName === 'SELECT' && !e.parentNode.multiple)
 		e.parentNode.value = e.value;
@@ -275,6 +274,7 @@ class JuNePAU {
     eval(`${this.d2v(d)}${e.dataset.jpauFor} v = this.updForLn({...v, d: {${a}, ...d}});`);
   }
   updHTML(t, p, d) {
+    if(!t || t?.dataset?.jpauIgnore) return;
     this.DOMobs(1);
     t.querySelectorAll('[data-jpauattr]').forEach(e => this.updElm(e, p, d, t));
     t.querySelectorAll('[data-jpau-if]').forEach(e => this.updIf(e, p, d, t));
@@ -317,7 +317,7 @@ class JuNePAU {
       let a = {}, v = o.firstElementChild.getAttribute('*selected');
       for(let i of o.options)
 	a[i.value] = i.selected;
-      eval(`if(o.multiple) ${v} = a; else ${v} = (o.selectedOptions.length) ? o.selectedOptions[0].value : null;`);
+      if(v) eval(`if(o.multiple) ${v} = a; else ${v} = (o.selectedOptions.length) ? o.selectedOptions[0].value : null;`);
     }
   }
   async load(m) {
@@ -355,6 +355,11 @@ class JuNePAU {
   async importMod(n, bg) {
     n = n || {};
     const m = (typeof n === 'object') ? n : await import(`${this.path}${n}.js`), prev = this.module, mod = (typeof n === 'object') ? (bg || 'index') : n.split('/').pop();
+    if(this.module === mod && this.main.data?.skipReload) {
+      if(this.funcs.onMount)
+	this.funcs.onMount.bind(this)(true);
+      return;
+    }
     this.module = mod;
 
     if(prev && this.bgmod[prev]) {
@@ -377,7 +382,7 @@ class JuNePAU {
       this.bnd(this.funcs);
       if(bg) {
 	this.bgmod[mod] = {data: this.data, funcs: this.funcs};
-	this.outlet && this.outlet.insertAdjacentHTML('afterend', `<div id="PAUBGDIV_${mod}"></div>`);
+	this.outlet?.insertAdjacentHTML('afterend', `<div id="PAUBGDIV_${mod}"></div>`);
       }
       if(this.funcs.onLoad)
 	this.funcs.onLoad.bind(this)();
@@ -385,9 +390,9 @@ class JuNePAU {
       this.outlet && (this.outlet.style.display = 'none');
       if(bg) {
 	this.outlet && (this.outlet.innerHTML = '');
-	this.e(`PAUBGDIV_${mod}`).innerHTML = m.html ?? '';
+	this.e(`PAUBGDIV_${mod}`).innerHTML = m.html?.call?.(m) ?? m.html ?? '';
       } else
-	this.outlet && (this.outlet.innerHTML = m.html ?? '');
+	this.outlet && (this.outlet.innerHTML = m.html?.call?.(m) ?? m.html ?? '');
 
       this.prepHTML();
       !bg && this.outlet && (this.outlet.style.display = '');
@@ -403,9 +408,14 @@ class JuNePAU {
     }
     if(this.funcs.onMount)
       this.funcs.onMount.bind(this)();
+    if(this.main.funcs.onReady)
+      this.main.funcs.onReady.bind(this)();
   }
   link(u) {
     let p = new URL(u ?? '', window.location).pathname;
+    if(this.main?.funcs?.onLink && this.main.funcs.onLink.bind(this)(p))
+      return;
+
     this.params = {};
     this.getparams = new URLSearchParams(window.location.search);
     let g, i = this.routes.findIndex(e => {
@@ -444,7 +454,7 @@ class JuNePAU {
     return document.getElementById(e);
   }
   stopp() {
-    event && event.preventDefault() && event.stopPropagation();
+    event?.preventDefault(), event?.stopPropagation();
   }
   html2text(s) {
     let e = document.createElement('div');
@@ -506,18 +516,18 @@ class JuNePAU {
       return '<input id="JPWB_' + b + this.id + '" type="button" value="' + this[`t${b}`] + '" style="width: 100px; margin: 0 4px" class="button">';
     }
     ok() {
-      this.o.okAction && this.o.okAction((this.input === undefined) ? undefined : this.p.e(`JPWI_${this.id}`).value);
+      this.o.okAction?.((this.input === undefined) ? undefined : this.p.e(`JPWI_${this.id}`).value);
       !this.o?.noHide && this.hide();
     }
     cancel() {
-      this.o.cancelAction && this.o.cancelAction();
+      this.o.cancelAction?.();
       !this.o?.noHide && this.hide();
     }
     show() {
       let s='<div id="JPWD_' + this.id + '" style="z-index: ' + (30 + this.id) + '; display: flex; position: fixed; left: 0; top: 0; width: 100%; height: 100%; opacity: 0' +
 		((this.o.winCSSbg) ? `" class="${this.o.winCSSbg}` : '; background: rgba(255,255,255,0.83); backdrop-filter: blur(2px); transition: .5s ease') + '">' +
 	'<div id="JPWC_' + this.id + '" style="position: relative' +
-		((this.o.winCSSfg) ? `" class="${this.o.winCSSfg}` : '; margin: auto; padding: 8px; text-align: center; border-radius: 6px; background: #FFF; box-shadow: 1px 1px 10px #444; transform: scale(1.4); transition: .3s ease') + '">' +
+		((this.o.winCSSfg) ? `" class="${this.o.winCSSfg}` : '; margin: auto; padding: 8px; text-align: center; border-radius: 6px; color: #333; background: #FFF; box-shadow: 1px 1px 10px #444; transform: scale(1.4); transition: .3s ease') + '">' +
 	'<div style="text-align: right' + ((this.o.winCSSfg) ? '' : '; color: #333') + '"><span id="JPWX_' + this.id + '" style="cursor: pointer; font-size: 12px">&#9587;</span></div><div style="padding: 10px 4px' + ((this.o.winCSSfg) ? '' : '; color: #333; line-height: 1.7em') + '">' +
 	this.t + ((this.input === undefined) ? '' : `<br><br><input id="JPWI_${this.id}" type="text" value="${this.input}" autocomplete="off" style="width: 90%" class="txt">`) +
 	'</div>' + ((this.tok || this.tcancel) ? '<br>' : '') + ((this.tok) ? this.button('ok') : '') + ((this.tcancel) ? this.button('cancel') : '') + '</div></div>';
@@ -529,6 +539,7 @@ class JuNePAU {
       (this.tcancel) && this.p.e('JPWB_cancel' + this.id).addEventListener('click', this.cancel.bind(this));
       window.addEventListener('keydown', this.ekeydown);
       setTimeout(() => {this.p.e('JPWD_' + this.id).style.opacity = 1; this.p.e('JPWC_' + this.id).style.transform = 'scale(1)'}, 100);
+      this.o.showAction?.();
     }
     keydown() {
       let i = event.target, k = event.which;
@@ -538,7 +549,7 @@ class JuNePAU {
       if(k !== 13 && k !== 27 && k !== 32)
 	return true;
 
-      (k === 27 && this.tcancel) ? this.cancel() : this.ok();
+      if(this.id === this.p.wins.length - 1) (k === 27 && this.tcancel) ? this.cancel() : this.ok();
       this.p.stopp();
 
       return false;
@@ -548,6 +559,7 @@ class JuNePAU {
 	this.hide();
     }
     hide() {
+      this.o.closeAction?.();
       this.p.e('JPWD_' + this.id).style.opacity = 0;
       this.p.e('JPWC_' + this.id).style.transform = 'scale(0.8)';
       setTimeout(() => {if(this.p.wins[this.id]) this.destroy()}, 500);
@@ -572,9 +584,10 @@ class JuNePAU {
       this.id = p.genId();
       this.t = t;
       this.o = o = o || {};
+      this.bgc = o.toastBG || '0,0,0';
       this.pos = o.toastPos || p.main.data?.toastPos || 'top';
       this.py = o.toastPY || p.main.data?.toastPY || '50px';
-      this.time = o.toastTime || p.main.data?.toastTime || 4000;
+      this.time = o.toastTime || p.main.data?.toastTime || 5000;
       this.toastCSS = o.toastCSS || p.main.data?.toastCSS;
       this.tmr = 0;
       this.show();
@@ -584,12 +597,13 @@ class JuNePAU {
     }
     show() {
       let s='<div id="JPT_' + this.id + '" role="alert" aria-live="polite" style="z-index: ' + (50 + this.id) + '; position: fixed; ' + ((this.pos === 'bottom') ? 'bottom' : 'top') + ': -40px; opacity: 0' +
-		((this.o.toastCSS) ? `" class="${this.o.toastCSS}` : '; width: 80%; left: 10%; right: 10%; padding: 7px 9px 20px; text-align: center; border-radius: 6px; box-shadow: 1px 1px 10px #CCC; color: #FFF; background: rgba(0,0,0,0.83); backdrop-filter: blur(2px); transition: .3s ease') + '">' +
-	'<span id="JPTX_' + this.id + '" style="cursor: pointer; display: block; text-align: right; font-size: 12px">&#9587;</span>' + this.t + '</div>';
+		((this.o.toastCSS) ? `" class="${this.o.toastCSS}` : '; width: 80%; left: 10%; right: 10%; padding: 7px 9px 20px; text-align: center; border-radius: 6px; box-shadow: 1px 1px 10px #CCC; color: #FFF; background: rgba(' + this.bgc +  ',0.83); backdrop-filter: blur(2px); transition: .3s ease') + '">' +
+	'<span id="JPTX_' + this.id + '" style="cursor: pointer; display: block; text-align: right; font-size: 12px">' +
+        '<div id="JPTP_' + this.id + '" style="width: 20px" class="ib vt">&nbsp;</div> &nbsp; &#9587;</span>' + this.t + '</div>';
 
       document.body.insertAdjacentHTML('afterbegin', s);
       this.p.e('JPTX_' + this.id).addEventListener('click', this.hide.bind(this));
-      setTimeout(() => {this.p.e('JPT_' + this.id).style.opacity = 1; this.p.e('JPT_' + this.id).style[(this.pos === 'bottom') ? 'bottom' : 'top'] = this.py}, 100);
+      setTimeout(() => {this.p.e('JPT_' + this.id).style.opacity = 1; this.p.e('JPT_' + this.id).style[(this.pos === 'bottom') ? 'bottom' : 'top'] = (parseInt(this.py, 10) + ((this.p.toasts.length - 1) * (this.p.e('JPT_' + this.id).clientHeight + 4))) + 'px'}, 100);
       if(this.time) {
 	if(document.hidden) {
 	  this.ehtmr = this.htmr.bind(this);
@@ -599,8 +613,10 @@ class JuNePAU {
       }
     }
     htmr(t) {
-      if(!document.hidden)
+      if(!document.hidden) {
+	if(this.p.e('JPTP_' + this.id)) this.p.e('JPTP_' + this.id).innerHTML = '<svg style="width: 18px" viewBox="0 0 120 120"><circle cx="60" cy="60" r="25" transform="rotate(-90 60 60)" style="stroke: #555; stroke-width: 50; fill: none" /><circle cx="60" cy="60" r="25" transform="rotate(-90 60 60)" pointer-events="all" style="stroke: var(--jcbtheme); stroke-width: 50; fill: none; stroke-dasharray: 219; stroke-dashoffset: 219; animation: toast-circle ' + (this.time + 1000) + 'ms linear 1 forwards" /></svg>';
 	this.tmr = setTimeout(() => this.hide(), this.time + ((t === -1) ? 0 : 1000));
+      }
     }
     hide() {
       clearTimeout(this.tmr);
@@ -619,7 +635,7 @@ class JuNePAU {
     }
   }
   sendReqIni(url, method, data, pget = {}) {
-    let u = new URL(url), d = (data && data instanceof FormData), o = {method: method ?? 'GET', headers: (d) ? {} : {'Content-Type': 'application/json'}};
+    let u = new URL(url, window.location), d = (data && data instanceof FormData), o = {method: method ?? 'GET', headers: (d) ? {} : {'Content-Type': 'application/json'}};
     if(this.main.data?._token)
       o.headers['x-access-token'] = this.main.data._token;
     if(this.main.data?._auth)
@@ -1004,5 +1020,5 @@ const june_pau = new JuNePAU();
 window.customElements.define('jpau-content', JPauContent);
 window.customElements.define('jpau-link', JPauLink, {extends: 'a'});
 window.addEventListener('load', () => june_pau.load());
-window.addEventListener('popstate', () => june_pau.link(document.location));
+window.addEventListener('popstate', () => june_pau.link(document.location.href));
 window.addEventListener('beforeunload', e => {if(june_pau.main.data?.beforeunload || Object.keys(june_pau.files).length > 1) e.returnValue = true});
