@@ -1,5 +1,5 @@
 // PaulaJS (Portable Adaptable Utility for Lightweight Applications)
-// https://github.com/EduardoRuizM/june-paulajs (2.1.4) - Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
+// https://github.com/EduardoRuizM/june-paulajs (2.1.5) - Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 
 'use strict';
 
@@ -19,7 +19,7 @@ class JuNePAU {
     this.lng = window.navigator.language;
     this.lang = -1;
     this.bgmod = {};
-    this._evnlst = {};
+    this._evnmap = new WeakMap();
     this._stopup = {s: 0, g: 0, o: new MutationObserver((mutationList, observer) => {for(const mutation of mutationList) {if(mutation.type === 'childList' && [...mutation.addedNodes].some(n => n.nodeType === 1 && !n.closest('[data-jpau-ignore]'))) {this.prepHTML(); break;}}})};
     this.path = document.currentScript.getAttribute('path') || '/';
   }
@@ -61,21 +61,32 @@ class JuNePAU {
     };
     return new Proxy(d || {}, {...mod_proxy});
   }
+  boundHnd(e, n, h) {
+    const bh = h.bind(this);
+    e.addEventListener(n, bh);
+    if(!this._evnmap.has(e)) this._evnmap.set(e, []);
+    this._evnmap.get(e).push({n, bh});
+  }
+  createHnd(c) {
+    try {
+      return new Function('event', `with(this) {${c}}`);
+    } catch(e) {
+      console.error('Error compiling event handler:', c, e);
+      return () => {};
+    }
+  }
   prepEvn(e, p, d, t) {
     if((!d && this.inFor(e, t)) || t?.dataset?.jpauIgnore)
       return;
 
-    Array.prototype.slice.call(e.attributes || {}).forEach(function(i) {
+    Array.prototype.slice.call(e.attributes || {}).forEach(i => {
       if(i.name.startsWith('@')) {
-	let n = i.name.substring(1);
+	const n = i.name.substring(1);
 	e.dataset.jpauproc = 1;
-	let j = e.dataset.jpaueid||= this.genJId(), f = '{' + this.replHTML(this.d2d(d) + e.getAttribute(i.name).replaceAll('$this.', 'event.target.').replace(/(this\.funcs\.)([^.\(]+)/g, '$1$2.bind(this)'), d) + '}';
-	if(this._evnlst[j])
-	  eval(`e.removeEventListener('${n}', this._evnlst.${j});`);
-	eval(`this._evnlst['${j}'] = e => ${f};`)
-	eval(`e.addEventListener('${n}', this._evnlst.${j});`);
+	const h = this.createHnd(this.replHTML(this.d2d(d) + e.getAttribute(i.name).replaceAll('$this.', 'event.target.'), d));
+	this.boundHnd(e, n, h);
       }
-    }.bind(this));
+    });
   }
   prepElm(e, p, d, t) {
     if(e.dataset?.jpauproc)
@@ -85,7 +96,6 @@ class JuNePAU {
       return;
 
     this.prepEvn(e, p, d, t);
-
     Array.prototype.slice.call(e.attributes || {}).forEach(function(i) {
       if(i.name.startsWith(':') || i.name.startsWith('*')) {
 	e.dataset.jpauproc = e.dataset?.jpauproc || 1;
@@ -118,23 +128,22 @@ class JuNePAU {
     this.updHTML(m ?? document, p, d, t);
   }
   replHTML(v, d) {
-    let t = v, p = (d) ? {...d, ...this.data} : this.data;
-    [...v.matchAll(/{{ ([^{]+) }}/g)].forEach(i => {
-      if(p[i[1]] !== undefined) {
-	t = t.replace(i[0], p[i[1]]);
-	if(t.match(/{{ ([^{]+) }}/))
-	  t = this.replHTML(t, d);
-      } else {
-	try {
-	  let r = eval(i[1].replaceAll(/([a-z]{1}[a-z0-9_\-\.,]*)([\s\[\]\)]+|$)/gi, s => ((/^(this|june_pau|data)\./.test(s)) ? '' : 'p.') + s));
-	  if(r !== undefined)
-	    t = t.replace(i[0], r);
-
-	} catch(e) {}
+    let t = v;
+    const p = d ? { ...d, ...this.data } : this.data, o = t;
+    [...v.matchAll(/{{\s*([^{}]+)\s*}}/g)].forEach(i => {
+      const e = i[1];
+      if(p[e] !== undefined) {
+	t = t.replace(i[0], p[e]);
+	return;
       }
+      try {
+	const c = e.replaceAll(/([a-z]{1}[a-z0-9_\-\.,]*)([\s\[\]\)]+|$)/gi, s => (/^(this|june_pau|data)\./.test(s)) ? s : 'p.' + s);
+	const fn = new Function('p', `with(this) { return (${c}); }`), r = fn.call(this, p);
+	if(r !== undefined)
+	  t = t.replace(i[0], r);
+      } catch(e) {}
     });
-
-    return t;
+    return (t !== o && t.match(/{{\s*[^{}]+\s*}}/)) ? this.replHTML(t, d) : t;
   }
   chkDo(p, v, d) {
     return (this.main.data?.forceUpdate || !p || (p && typeof v === 'string' && (v.includes(p) || (d && Object.keys(d).some(e => v.includes(e))))));
@@ -172,30 +181,49 @@ class JuNePAU {
     if(this.inFor(e, t, true))
       return;
 
+    e._jpau_cache ??= {};
     Array.prototype.slice.call(e.attributes || {}).forEach(function(i) {
       let t = i.name.substring(1);
       if(i.name.startsWith(':')) {
 	let v = e.getAttribute(i.name);
-	if(this.chkDo(pp, v) || this.chkDo(p, v))
-	  e.setAttribute(t, this.replHTML(v, d));
+	if(this.chkDo(pp, v) || this.chkDo(p, v)) {
+	  let r = this.replHTML(v, d);
+	  if(e._jpau_cache[t] !== r) {
+	    e.setAttribute(t, r);
+	    e._jpau_cache[t] = r;
+	  }
+	}
       }
+
       if(i.name.startsWith('*')) {
 	let a = this.d2v(d), v = this.replHTML(e.getAttribute(i.name), d), c = /^selected|checked|disabled|required|readonly|multiple|autofocus$/i.test(t), r;
 	if(this.chkDo(p, v)) {
 	  if((c || t === 'value') && this.chkVar(v))
-	    r = eval(`${a}(typeof ${v} === 'object' && ${v} !== null) ? ${v}['${(t === 'selected') ? e.value : (e.id) ? e.id : e.name}'] : ((t === 'selected') ? ${v} == e.value : ((${v} === 'checked') ? e.checked : ${v}));`);
+	    r = eval(`${a}(typeof ${v} === 'object' && ${v} !== null) ? ${v}['${(t === 'selected') ? e.value : (e.id || e.name)}'] : ((t === 'selected') ? ${v} == e.value : ((${v} === 'checked') ? e.checked : ${v}));`);
 	  else
 	    r = eval(`${a}${v};`);
-	  if(!r && c)
-	    e.removeAttribute(t);
-	  else {
-	    if(e.tagName === 'TEXTAREA' && t === 'value')
-	      e.value = r;
-	    else {
+	  e._jpau_cache ??= {};
+	  if(!r && c) {
+	    if(e.hasAttribute(t)) {
+	      e.removeAttribute(t);
+	      delete e._jpau_cache[t];
+	    }
+	  } else {
+	    if(e.tagName === 'TEXTAREA' && t === 'value') {
+	      if(e._jpau_cache.value !== r) {
+		e.value = r;
+		e._jpau_cache.value = r;
+	      }
+	    } else {
 	      if(e.parentNode.tagName === 'SELECT' && !e.parentNode.multiple)
 		e.parentNode.value = e.value;
-	      else
-		e.setAttribute(t, (c) ? '' : r);
+	      else {
+		let v = (c) ? '' : r;
+		if(e._jpau_cache[t] !== v) {
+		  e.setAttribute(t, v);
+		  e._jpau_cache[t] = v;
+		}
+	      }
 	    }
 	  }
 	}
@@ -204,8 +232,13 @@ class JuNePAU {
 
     if(e.dataset?.jpauihtml) {
       let v = e.dataset.jpauihtml, c = (e.content) ? 'content' : 'innerHTML';
-      if(this.chkDo(p, v, d) || this.chkDo(p, e[c], d))
-	e[c] = this.replHTML(v, d);
+      if(this.chkDo(p, v, d) || this.chkDo(p, e[c], d)) {
+	let r = this.replHTML(v, d);
+	if(e._jpau_html !== r) {
+	  e[c] = r;
+	  e._jpau_html = r;
+	}
+      }
     }
   }
   updIf(e, p, d, t) {
@@ -296,9 +329,6 @@ class JuNePAU {
 	  e.addEventListener('dragleave', e => event.target.style.backgroundColor = '');
 	}
     });
-    for(let i in this._evnlst) {
-      if(!document.querySelector(`[data-jpaueid='${i}']`)) delete this._evnlst[i];
-    }
     this.DOMobs(-1);
   }
   recElm(m, e, p, d, t, o) {
