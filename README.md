@@ -10,7 +10,7 @@
   Free open-source JavaScript framework to build frontend, user interfaces and single-page applications
 </p>
 
-# [JuNe PaulaJS](https://github.com/EduardoRuizM/june-paulajs "JuNe PaulaJS") (only 1 file: 30 Kb)
+# [JuNe PaulaJS](https://github.com/EduardoRuizM/june-paulajs "JuNe PaulaJS") (only 1 file: 31 Kb)
 ## JavaScript framework to build frontend or any type of web project
 
 ● JuNe PaulaJS (Portable Adaptable Utility for Lightweight Applications) is a JavaScript framework similar to React, Vue or Angular, but with more and needed features, without dependencies an optimized in 1 file.
@@ -23,7 +23,7 @@
 
 🏎️ So, developments, deployments, executions and performance are faster.
 
-🍃 And a lower impact on the carbon footprint, both in the server and in the client browser, by using files of a few 30 Kb, which represents less transfer and less execution times, in a difference between 400-800 times compared to other frameworks.
+🍃 And a lower impact on the carbon footprint, both in the server and in the client browser, by using files of a few 31 Kb, which represents less transfer and less execution times, in a difference between 400-800 times compared to other frameworks.
 
 ● Compatible and created with [ECMAScript 2024](https://262.ecma-international.org/15.0/ "ECMAScript 2024") (ES15).
 
@@ -55,7 +55,7 @@
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Files | **1** | 151 | 37.200 | 293 | 10.410 | 5.490 |
 | Folders | **0** | 23 | 4.909 | 56 | 943 | 497 |
-| Size | **30 Kb** | 7.8 Mb | 225 Mb | 14 Mb | 36.7 Mb | 156 Mb |
+| Size | **31 Kb** | 7.8 Mb | 225 Mb | 14 Mb | 36.7 Mb | 156 Mb |
 
 ## All features you need
 
@@ -107,7 +107,7 @@
 
 ✔ Ease installation, just include (minified) JuNe PaulaJS JavaScript file on your HTML.
 
-![30 Kb](https://img.shields.io/github/size/EduardoRuizM/june-paulajs/june-paula.min.js) ![NPM Downloads](https://img.shields.io/npm/dt/june-paulajs)
+![31 Kb](https://img.shields.io/github/size/EduardoRuizM/june-paulajs/june-paula.min.js) ![NPM Downloads](https://img.shields.io/npm/dt/june-paulajs)
 
 # Author
 [Eduardo Ruiz](https://github.com/EduardoRuizM) <<eruiz@dataclick.es>>
@@ -1157,6 +1157,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 | README.md | Full and detailed JuNe PaulaJS documentation |
 
 # Changelog
+- Version 2.1.6 (2025-11-26):
+  - Reworked reactive system with expression caching and nested proxy handling for improved performance.
+  - Refined for looping with clean cloning and incremental updates to prevent unnecessary reprocessing.
+  - Added JuNe CSS 2.1.3 with FontAwesome 7.1.0.
+
 - Version 2.1.5 (2025-08-01):
   - Enhanced DOM differing logic to improve performance by limiting updates to affected elements only.
   - Redesigned event handling system with WeakMap to efficiently manage event listeners and delegation, reducing memory leaks and improving responsiveness.

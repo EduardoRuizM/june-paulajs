@@ -1,5 +1,5 @@
 // PaulaJS (Portable Adaptable Utility for Lightweight Applications)
-// https://github.com/EduardoRuizM/june-paulajs (2.1.5) - Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
+// https://github.com/EduardoRuizM/june-paulajs (2.1.6) - Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 
 'use strict';
 
@@ -20,38 +20,49 @@ class JuNePAU {
     this.lang = -1;
     this.bgmod = {};
     this._evnmap = new WeakMap();
-    this._stopup = {s: 0, g: 0, o: new MutationObserver((mutationList, observer) => {for(const mutation of mutationList) {if(mutation.type === 'childList' && [...mutation.addedNodes].some(n => n.nodeType === 1 && !n.closest('[data-jpau-ignore]'))) {this.prepHTML(); break;}}})};
+    this._updateScheduled = false;
+    this._updateQueue = new Set();
+    this._proxyCache = new WeakMap();
+    this._exprCache = new Map();
+    this._stopup = {s: 0, g: 0, o: new MutationObserver((mutationList, observer) => {
+      for(const mutation of mutationList) {
+	  if(mutation.type === 'childList' && [...mutation.addedNodes].some(n => n.nodeType === 1 && !n.closest('[data-jpau-ignore]') && !n.hasAttribute('data-jpauproc'))) {
+	    requestAnimationFrame(() => this.prepHTML());
+	    break;
+	}
+      }
+    })};
     this.path = document.currentScript.getAttribute('path') || '/';
+    this.mmethods = new Set(['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse', 'fill', 'copyWithin']);
   }
   setProxy(d) {
     const mod_proxy = {
       set: function(obj, p, v) {
-	if(p === '_SetN_') {
-	  this._N_1 = v;
+	if(p === '_SetN_' || p === '_SetN2_') {
+	  this[p] = v;
 	  return true;
 	}
-	if(p === '_SetN2_') {
-	  this._N_2 = v;
-	  return true;
-	}
+	if(obj[p] === v) return true;
 	obj[p] = v;
-	this.updHTML(document, (this._N_2) ? this._N_2 : p);
+	this.scheduleUpdate(document, (this._N_2) ? this._N_2 : p);
 	return true;
       }.bind(this),
       get: function(t, p) {
 	const v = t[p];
 	if(typeof v === 'function') {
-	  if(!Array.prototype[p])
-	    return v.bind(this);
-	  return function() {
-	    const r = Array.prototype[p].apply(t, arguments);
-	    if(!this._stopup.g)
-	      this.updHTML(document, this._N_1);
-	    return r;
-	  }.bind(this);
+	  if(this.mmethods.has(p)) {
+	    return function(...args) {
+	      const r = Array.prototype[p].apply(t, args);
+	      if(!this._stopup.g) this.scheduleUpdate(document, this._N_1);
+	      return r;
+	    }.bind(this);
+	  }
+	  return v.bind(t);
 	}
 	if(typeof v === 'object' && v) {
+	  if(this._proxyCache.has(v)) return this._proxyCache.get(v);
 	  let o = new Proxy(v, {...mod_proxy});
+	  this._proxyCache.set(v, o);
 	  o._SetN_ = p;
 	  o._SetN2_ = (p >= 0) ? this._N_1 : '';
 	  return o;
@@ -61,11 +72,28 @@ class JuNePAU {
     };
     return new Proxy(d || {}, {...mod_proxy});
   }
+  scheduleUpdate(scope = document, key) {
+    this._updateQueue.add(scope);
+    if(this._updateScheduled) return;
+    this._updateScheduled = true;
+    requestAnimationFrame(() => {
+      try{
+	for(const s of this._updateQueue) this.updHTML(s);
+      } finally {
+	this._updateQueue.clear();
+	this._updateScheduled = false;
+      }
+    });
+  }
   boundHnd(e, n, h) {
+    if(!this._evnmap.has(e)) this._evnmap.set(e, []);
+    const lst = this._evnmap.get(e);
+    if(lst.some(ev => ev.n === n && ev.hsrc === h.toString()))
+      return;
+
     const bh = h.bind(this);
     e.addEventListener(n, bh);
-    if(!this._evnmap.has(e)) this._evnmap.set(e, []);
-    this._evnmap.get(e).push({n, bh});
+    lst.push({n, bh, hsrc: h.toString()});
   }
   createHnd(c) {
     try {
@@ -122,28 +150,42 @@ class JuNePAU {
     }
   }
   prepHTML(m, p, d, t) {
-    const elms = (m ?? document).querySelectorAll('*:not([data-jpau-ignore])');
-    for(let i of elms)
-      this.prepElm(i, p, d, t);
+    const walker = document.createTreeWalker(m ?? document, NodeFilter.SHOW_ELEMENT, {
+      acceptNode: node => {return node.hasAttribute('data-jpau-ignore') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;}
+    });
+    const elements = [];
+    let node;
+    while(node = walker.nextNode()) elements.push(node);
+    for(let i of elements) this.prepElm(i, p, d, t);
     this.updHTML(m ?? document, p, d, t);
   }
   replHTML(v, d) {
     let t = v;
-    const p = d ? { ...d, ...this.data } : this.data, o = t;
-    [...v.matchAll(/{{\s*([^{}]+)\s*}}/g)].forEach(i => {
-      const e = i[1];
-      if(p[e] !== undefined) {
-	t = t.replace(i[0], p[e]);
-	return;
+    const p = d ? { ...d, ...this.data } : this.data;
+    const matches = [...v.matchAll(/{{\s*([^{}]+)\s*}}/g)];
+    for(const i of matches) {
+      const expr = i[1].trim();
+      if(p[expr] !== undefined) {
+	t = t.replace(i[0], p[expr]);
+	continue;
+      }
+      let fn = this._exprCache.get(expr);
+      if(!fn) {
+	const safeExpr = expr.replaceAll(/([a-z]{1}[a-z0-9_\-\.,]*)([\s\[\]\)]+|$)/gi, s => (/^(this|june_pau|data)\./.test(s) ? s : 'p.' + s));
+	try {
+	  fn = new Function('p', `with(this) {return (${safeExpr});}`);
+	  this._exprCache.set(expr, fn);
+	} catch (e) {
+	  fn = () => '';
+	  this._exprCache.set(expr, fn);
+	}
       }
       try {
-	const c = e.replaceAll(/([a-z]{1}[a-z0-9_\-\.,]*)([\s\[\]\)]+|$)/gi, s => (/^(this|june_pau|data)\./.test(s)) ? s : 'p.' + s);
-	const fn = new Function('p', `with(this) { return (${c}); }`), r = fn.call(this, p);
-	if(r !== undefined)
-	  t = t.replace(i[0], r);
+	const r = fn.call(this, p);
+	if(r !== undefined) t = t.replace(i[0], r);
       } catch(e) {}
-    });
-    return (t !== o && t.match(/{{\s*[^{}]+\s*}}/)) ? this.replHTML(t, d) : t;
+    }
+    return (t !== v && t.match(/{{\s*[^{}]+\s*}}/)) ? this.replHTML(t, d) : t;
   }
   chkDo(p, v, d) {
     return (this.main.data?.forceUpdate || !p || (p && typeof v === 'string' && (v.includes(p) || (d && Object.keys(d).some(e => v.includes(e))))));
@@ -176,6 +218,7 @@ class JuNePAU {
     }
   }
   updElm(e, p, d, t) {
+    if(!e.isConnected) return;
     const pp = (p) ? ((e.dataset.jpauihtml) ? e.dataset.jpauihtml : `{{ ${p} }}`) : 0;
 
     if(this.inFor(e, t, true))
@@ -248,13 +291,19 @@ class JuNePAU {
   updForLn(v) {
     if(++v.n > 1) {
 	let c = v.e.cloneNode(true);
-	c.querySelectorAll('[data-jpau-dep]').forEach(e => e.remove());
-	c.querySelectorAll('[data-jpauid]').forEach(e => e.dataset.jpauid = this.genJId());
+	const nodes = c.querySelectorAll('[data-jpau-dep], [data-jpauid], [data-jpauproc]');
+	for(const node of nodes) {
+	  if(node.dataset.jpauDep !== undefined) {
+	    node.remove();
+	    continue;
+	  }
+	  if(node.dataset.jpauid !== undefined) node.dataset.jpauid = this.genJId();
+	  node.removeAttribute('data-jpauproc');
+	}
 	c.dataset.jpauid = this.genJId();
 	c.dataset.jpauDep = v.e.dataset.jpauid;
 	c.dataset.jpauDepId = `${v.e.dataset.jpauid}_${v.n}`;
 	c.removeAttribute('data-jpau-for');
-	c.querySelectorAll('[data-jpauproc]').forEach(e => e.removeAttribute('data-jpauproc'));
 	v.lst.insertAdjacentHTML('afterend', c.outerHTML);
 	v.lst = document.querySelector(`[data-jpauid='${c.dataset.jpauid}']`);
     } else
@@ -263,9 +312,10 @@ class JuNePAU {
     v.lst.removeAttribute('data-jpauproc');
     this.prepElm(v.lst, undefined, v.d, v.e);
     this.updElm(v.lst, undefined, v.d, v.e);
-    v.lst.querySelectorAll('*').forEach(e => this.prepElm(e, undefined, v.d, v.e));
+    const children = v.lst.querySelectorAll('*');
+    children.forEach(e => this.prepElm(e, undefined, v.d, v.e));
     this.updHTML(v.lst, undefined, v.d);
-    v.lst.querySelectorAll('*').forEach(e => this.prepEvn(e, undefined, v.d, v.e));
+    children.forEach(e => this.prepEvn(e, undefined, v.d, v.e));
     return v;
   }
   updForv(e) {
@@ -309,8 +359,12 @@ class JuNePAU {
   updHTML(t, p, d) {
     if(!t || t?.dataset?.jpauIgnore) return;
     this.DOMobs(1);
-    t.querySelectorAll('[data-jpauattr]').forEach(e => this.updElm(e, p, d, t));
-    t.querySelectorAll('[data-jpau-if]').forEach(e => this.updIf(e, p, d, t));
+    const walker = document.createTreeWalker(t, NodeFilter.SHOW_ELEMENT);
+    let e;
+    while (e = walker.nextNode()) {
+        if(e.dataset.jpauattr) this.updElm(e, p, d, t);
+        if(e.dataset.jpauIf) this.updIf(e, p, d, t);
+    }
     this._stopup.g++;
     t.querySelectorAll('[data-jpau-for]').forEach(e => this.updFor(e, p, d, t));
     this._stopup.g--;
@@ -468,7 +522,7 @@ class JuNePAU {
     if((l === -1) && (l = this.main.langs.findIndex(i => i.default === c.substring(0, 2))) === -1)
       l = 0;
 
-    this.lng = c;
+    this.lng = this.main.langs[l].code;
     this.lang = l;
     localStorage.setItem('lang', c);
     if(p !== -1)
@@ -629,7 +683,7 @@ class JuNePAU {
       let s='<div id="JPT_' + this.id + '" role="alert" aria-live="polite" style="z-index: ' + (50 + this.id) + '; position: fixed; ' + ((this.pos === 'bottom') ? 'bottom' : 'top') + ': -40px; opacity: 0' +
 		((this.o.toastCSS) ? `" class="${this.o.toastCSS}` : '; width: 80%; left: 10%; right: 10%; padding: 7px 9px 20px; text-align: center; border-radius: 6px; box-shadow: 1px 1px 10px #CCC; color: #FFF; background: rgba(' + this.bgc +  ',0.83); backdrop-filter: blur(2px); transition: .3s ease') + '">' +
 	'<span id="JPTX_' + this.id + '" style="cursor: pointer; display: block; text-align: right; font-size: 12px">' +
-        '<div id="JPTP_' + this.id + '" style="width: 20px" class="ib vt">&nbsp;</div> &nbsp; &#9587;</span>' + this.t + '</div>';
+	'<div id="JPTP_' + this.id + '" style="width: 20px" class="ib vt">&nbsp;</div> &nbsp; &#9587;</span>' + this.t + '</div>';
 
       document.body.insertAdjacentHTML('afterbegin', s);
       this.p.e('JPTX_' + this.id).addEventListener('click', this.hide.bind(this));
