@@ -627,7 +627,7 @@ class JuNePAU {
     }
     keydown() {
       let i = event.target, k = event.which;
-      if(i.type && i.type === 'text')
+      if(['INPUT', 'TEXTAREA'].tagName || i.contentEditable)
 	return true;
 
       if(k !== 13 && k !== 27 && k !== 32)
