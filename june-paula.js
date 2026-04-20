@@ -1,5 +1,5 @@
 // PaulaJS (Portable Adaptable Utility for Lightweight Applications)
-// https://github.com/EduardoRuizM/june-paulajs (2.1.6) - Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
+// https://github.com/EduardoRuizM/june-paulajs (2.1.7) - Copyright (c) 2025 Eduardo Ruiz <eruiz@dataclick.es>
 
 'use strict';
 
@@ -355,6 +355,11 @@ class JuNePAU {
       e.parentNode.selectedIndex = -1;
 
     eval(`${this.d2v(d)}${e.dataset.jpauFor} v = this.updForLn({...v, d: {${a}, ...d}});`);
+    const sel = e.closest('select'), sc = sel?.querySelector('selectedcontent');
+    if(sc) {
+      const s = [...sel.options].find(o => o.selected);
+      if(s) sc.innerHTML = s.innerHTML;
+    }
   }
   updHTML(t, p, d) {
     if(!t || t?.dataset?.jpauIgnore) return;
@@ -362,8 +367,8 @@ class JuNePAU {
     const walker = document.createTreeWalker(t, NodeFilter.SHOW_ELEMENT);
     let e;
     while (e = walker.nextNode()) {
-        if(e.dataset.jpauattr) this.updElm(e, p, d, t);
-        if(e.dataset.jpauIf) this.updIf(e, p, d, t);
+      if(e.dataset.jpauattr) this.updElm(e, p, d, t);
+      if(e.dataset.jpauIf) this.updIf(e, p, d, t);
     }
     this._stopup.g++;
     t.querySelectorAll('[data-jpau-for]').forEach(e => this.updFor(e, p, d, t));
@@ -398,7 +403,7 @@ class JuNePAU {
     else if(c)
       eval(`if(typeof ${c} === 'object' && ${c} !== null) ${c}[(o.id) ? o.id : o.name] = o.checked; else ${c} = o.checked;`);
     else {
-      let a = {}, v = o.firstElementChild.getAttribute('*selected');
+      let a = {}, v = o.querySelector('option')?.getAttribute('*selected');
       for(let i of o.options)
 	a[i.value] = i.selected;
       if(v) eval(`if(o.multiple) ${v} = a; else ${v} = (o.selectedOptions.length) ? o.selectedOptions[0].value : null;`);
@@ -470,7 +475,6 @@ class JuNePAU {
       }
       if(this.funcs.onLoad)
 	this.funcs.onLoad.bind(this)();
-
       this.outlet && (this.outlet.style.display = 'none');
       if(bg) {
 	this.outlet && (this.outlet.innerHTML = '');

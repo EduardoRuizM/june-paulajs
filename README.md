@@ -1157,6 +1157,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 | README.md | Full and detailed JuNe PaulaJS documentation |
 
 # Changelog
+- Version 2.1.7 (2026-04-20):
+  - Added selectedcontent element support for custom select components
+
 - Version 2.1.6 (2025-11-26):
   - Reworked reactive system with expression caching and nested proxy handling for improved performance.
   - Refined for looping with clean cloning and incremental updates to prevent unnecessary reprocessing.
